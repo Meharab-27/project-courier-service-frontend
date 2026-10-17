@@ -1,8 +1,6 @@
-import LoginForm from "@/components/form/login-form"
-import { GalleryVerticalEnd } from "lucide-react"
-import Link from "next/link"
-
-
+import { GalleryVerticalEnd } from "lucide-react";
+import Link from "next/link";
+import LoginForm from "@/components/form/login-form";
 
 export default function LoginPage() {
   return (
@@ -10,8 +8,7 @@ export default function LoginPage() {
       <div className="flex flex-col gap-4 p-6 md:p-10">
         <div className="flex justify-center gap-2 md:justify-start">
           <Link href="/" className="flex items-center gap-2 font-medium">
-            
-           Courier Service
+            Courier Service
           </Link>
         </div>
         <div className="flex flex-1 items-center justify-center">
@@ -22,12 +19,12 @@ export default function LoginPage() {
       </div>
       <div className="relative hidden bg-muted lg:block">
         {/** biome-ignore lint/performance/noImgElement: <explanation> */}
-<img
+        <img
           src="/courier-service.jpeg"
           alt=""
           className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
         />
       </div>
     </div>
-  )
+  );
 }
