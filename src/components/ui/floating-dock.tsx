@@ -231,7 +231,7 @@ function IconContainer({
               }}
               className={cn(
                 "pointer-events-none absolute left-1/2 z-50 w-fit rounded-lg border border-border/80 bg-popover px-2.5 py-1 text-[11px] font-semibold whitespace-pre text-popover-foreground shadow-lg backdrop-blur-md",
-                tooltipPosition === "top" ? "-top-8" : "-bottom-8",
+                tooltipPosition === "top" ? "-top-8" : "-bottom-7",
               )}
             >
               {title}
