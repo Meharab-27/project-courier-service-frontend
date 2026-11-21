@@ -1,22 +1,7 @@
 import apiClient from "@/lib/apiClient";
 
-export interface IHub {
-  id: string;
-  name: string;
-  code: string;
-  address: string;
-  zone: string;
-  contactNo?: string;
-  latitude?: number | null;
-  longitude?: number | null;
-}
-
-export interface IHubsResponse {
-  success: boolean;
-  statusCode: number;
-  message: string;
-  data: IHub[];
-}
+export type { IHub, IHubsResponse } from "./hub.api";
+export { getAllHubs } from "./hub.api";
 
 export interface ICourierProfile {
   id: string;
@@ -28,27 +13,50 @@ export interface ICourierProfile {
   drivingLicenseUrl?: string | null;
   nidCardUrl?: string | null;
   currentZone: string;
+  isAvailable?: boolean;
   maxCapacityKg: number;
+  activeDeliveries?: number;
+  createdAt?: string;
+  updatedAt?: string;
   hub?: {
     id: string;
     name: string;
     code: string;
     zone: string;
+    address?: string;
+  };
+  user?: {
+    id: string;
+    name: string;
+    email: string;
+    phone?: string;
+    status?: string;
   };
 }
 
-export function getAllHubs(): Promise<IHubsResponse> {
-  return apiClient<IHubsResponse>("/hubs", { method: "GET" });
+export interface ISetupCourierProfilePayload {
+  userId?: string;
+  hubId: string;
+  vehicleType: "BICYCLE" | "MOTORBIKE" | "VAN" | "TRUCK";
+  vehicleNumber: string;
+  drivingLicense?: string | null;
+  drivingLicenseUrl?: string | null;
+  nidCardUrl?: string | null;
+  currentZone: string;
+  isAvailable?: boolean;
+  maxCapacityKg: number;
 }
 
-export function setupCourierProfile(formData: FormData): Promise<{
+export function setupCourierProfile(
+  payload: FormData | ISetupCourierProfilePayload | Record<string, unknown>,
+): Promise<{
   success: boolean;
   message: string;
   data: ICourierProfile;
 }> {
   return apiClient("/courier/profile", {
     method: "POST",
-    body: formData,
+    body: payload,
   });
 }
 

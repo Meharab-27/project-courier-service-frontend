@@ -1,16 +1,16 @@
 "use client";
+
 import { GoogleLogin } from "@react-oauth/google";
 import { useForm } from "@tanstack/react-form";
 import { Eye, EyeClosed } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import React, { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useState } from "react";
 import { useGoogleOAuth, useLogin } from "@/hooks";
 import { loginSchema } from "@/validation";
 import { Button } from "../ui/button";
 import { Card } from "../ui/card";
 import { Field, FieldError, FieldGroup, FieldLabel } from "../ui/field";
-import { HaloButton } from "../ui/halo-button";
 import { Input } from "../ui/input";
 import { Separator } from "../ui/separator";
 import { Spinner } from "../ui/spinner";
@@ -20,15 +20,15 @@ export default function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
 
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectUrl = searchParams.get("redirect") || "/";
 
   const { mutate: login, isPending: loginPending } = useLogin();
-
   const { mutate: googleLogin } = useGoogleOAuth();
 
   const form = useForm({
     defaultValues: {
       email: "meharabrahman28@gmail.com",
-
       password: "Ab^1236789",
     },
     validators: {
@@ -36,24 +36,42 @@ export default function LoginForm() {
     },
     onSubmit: ({ value }) => {
       const loginData = {
-        email: value.email,
-
+        email: value.email.trim(),
         password: value.password,
       };
 
       login(loginData, {
-        onSuccess: (res) => {
+        onSuccess: (res: any) => {
           toast.add({
             title: "Login Success",
-            description: "Welcome back",
+            description: "Welcome back!",
             type: "success",
           });
-          router.push("/");
+
+          const explicitRedirect = searchParams.get("redirect");
+          if (explicitRedirect) {
+            router.push(explicitRedirect);
+            router.refresh();
+            return;
+          }
+
+          const userRole = res?.data?.user?.role;
+          if (userRole === "COURIER") {
+            router.push("/courier");
+          } else if (userRole === "ADMIN") {
+            router.push("/admin");
+          } else if (userRole === "CUSTOMER") {
+            router.push("/customer");
+          } else {
+            router.push("/");
+          }
+          router.refresh();
         },
-        onError: (err) => {
+        onError: (err: { message?: string }) => {
           toast.add({
             title: "Authorization failure",
-            description: err.message || "Something went wrong.Please try again",
+            description:
+              err.message || "Invalid credentials. Please verify your email and password.",
             type: "error",
           });
         },
@@ -75,15 +93,31 @@ export default function LoginForm() {
     googleLogin(
       { idToken },
       {
-        onSuccess: () => {
+        onSuccess: (res: any) => {
           toast.add({
             title: "Logged in Successfully",
             description: "Welcome back",
             type: "success",
           });
-          router.push("/");
+          const explicitRedirect = searchParams.get("redirect");
+          if (explicitRedirect) {
+            router.push(explicitRedirect);
+            router.refresh();
+            return;
+          }
+          const userRole = res?.data?.user?.role;
+          if (userRole === "COURIER") {
+            router.push("/courier");
+          } else if (userRole === "ADMIN") {
+            router.push("/admin");
+          } else if (userRole === "CUSTOMER") {
+            router.push("/customer");
+          } else {
+            router.push("/");
+          }
+          router.refresh();
         },
-        onError: (err) => {
+        onError: (err: { message?: string }) => {
           toast.add({
             title: "Google OAuth Failed",
             description: err.message || "Something Went Wrong",
@@ -101,6 +135,7 @@ export default function LoginForm() {
       type: "error",
     });
   };
+
   return (
     <Card className="w-full border border-border/60 bg-card/95 p-8 shadow-sm sm:max-w-md sm:rounded-2xl sm:p-10">
       <div className="flex flex-col gap-8">
@@ -135,12 +170,13 @@ export default function LoginForm() {
                     <Input
                       id={field.name}
                       name={field.name}
+                      type="email"
                       placeholder="you@example.com"
                       className="h-11 rounded-lg bg-background px-3.5 shadow-none transition-colors placeholder:text-muted-foreground/60 focus-visible:ring-2 focus-visible:ring-ring/30"
                       value={field.state.value}
                       onBlur={field.handleBlur}
                       onChange={(e) => field.handleChange(e.target.value)}
-                      autoComplete="off"
+                      autoComplete="email"
                       aria-invalid={isInvalid}
                     />
                     {isInvalid && (
@@ -150,6 +186,7 @@ export default function LoginForm() {
                 );
               }}
             </form.Field>
+
             <form.Field name="password">
               {(field) => {
                 const isInvalid =
@@ -180,7 +217,7 @@ export default function LoginForm() {
                         value={field.state.value}
                         onBlur={field.handleBlur}
                         onChange={(e) => field.handleChange(e.target.value)}
-                        autoComplete="off"
+                        autoComplete="current-password"
                         aria-invalid={isInvalid}
                       />
                       <button
@@ -213,8 +250,8 @@ export default function LoginForm() {
             >
               {loginPending ? (
                 <>
-                  {" "}
-                  <Spinner /> submitting
+                  <Spinner className="size-4" />
+                  <span>Signing In...</span>
                 </>
               ) : (
                 "Sign In"

@@ -10,8 +10,9 @@ import {
   Truck,
 } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { FileUpload } from "@/components/ui/file-upload";
+import { mergeHubsWithDefaults } from "@/constants";
 import { useGetHubs, useGetMe, useSubmitCourierProfile } from "@/hooks";
 import { cn } from "@/lib/utils";
 import {
@@ -26,9 +27,14 @@ import { Input } from "../ui/input";
 import { Spinner } from "../ui/spinner";
 import { toast } from "../ui/toast";
 
+import type { ICourierProfile } from "@/api";
+
 interface CourierApplyFormProps {
   onSuccess?: () => void;
   className?: string;
+  initialData?: Partial<ICourierProfile>;
+  isEditMode?: boolean;
+  onCancelEdit?: () => void;
 }
 
 interface ApiErrorShape {
@@ -75,9 +81,12 @@ const VEHICLE_OPTIONS: Array<{
 export default function CourierApplyForm({
   onSuccess,
   className,
+  initialData,
+  isEditMode = false,
+  onCancelEdit,
 }: CourierApplyFormProps) {
   const { data: userResponse, isLoading: isUserLoading } = useGetMe();
-  const { data: hubsData, isLoading: isHubsLoading } = useGetHubs();
+  const { data: hubsData, isLoading: isHubsLoading } = useGetHubs({ limit: 100 });
   const { mutate: submitProfile, isPending: isSubmitting } =
     useSubmitCourierProfile();
 
@@ -89,7 +98,9 @@ export default function CourierApplyForm({
   const [licenseFile, setLicenseFile] = useState<File | null>(null);
   const [nidFile, setNidFile] = useState<File | null>(null);
 
-  const hubs = hubsData?.data || [];
+  const hubs = useMemo(() => {
+    return mergeHubsWithDefaults(hubsData?.data);
+  }, [hubsData?.data]);
 
   const handleLicenseUpload = (files: File[]) => {
     setLicenseFile(files[0] || null);
@@ -101,12 +112,12 @@ export default function CourierApplyForm({
 
   const form = useForm({
     defaultValues: {
-      hubId: "",
-      vehicleType: "MOTORBIKE" as TVehicleType,
-      vehicleNumber: "",
-      drivingLicense: "" as string | undefined,
-      currentZone: "",
-      maxCapacityKg: 30,
+      hubId: initialData?.hubId || initialData?.hub?.id || "",
+      vehicleType: (initialData?.vehicleType || "MOTORBIKE") as TVehicleType,
+      vehicleNumber: initialData?.vehicleNumber || "",
+      drivingLicense: (initialData?.drivingLicense || "") as string | undefined,
+      currentZone: initialData?.currentZone || "",
+      maxCapacityKg: initialData?.maxCapacityKg ? Number(initialData.maxCapacityKg) : 30,
     } as TCourierApplyForm,
     validators: {
       onSubmit: courierApplySchema,
@@ -145,9 +156,10 @@ export default function CourierApplyForm({
       submitProfile(formData, {
         onSuccess: () => {
           toast.add({
-            title: "Application Submitted!",
-            description:
-              "Your courier profile and documents have been submitted successfully.",
+            title: isEditMode ? "Profile Updated!" : "Application Submitted!",
+            description: isEditMode
+              ? "Your courier partner profile credentials have been saved successfully."
+              : "Your courier profile and documents have been submitted successfully.",
             type: "success",
           });
           onSuccess?.();
@@ -179,18 +191,33 @@ export default function CourierApplyForm({
     >
       <div className="flex flex-col gap-6">
         {/* Header */}
-        <div className="flex flex-col gap-1.5">
-          <div className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-primary">
-            <Truck className="size-4" />
-            Courier Onboarding
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div className="flex flex-col gap-1.5">
+            <div className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-primary">
+              <Truck className="size-4" />
+              {isEditMode ? "Profile Management" : "Courier Onboarding"}
+            </div>
+            <h2 className="text-xl font-bold tracking-tight sm:text-2xl">
+              {isEditMode ? "Update Courier Partner Credentials" : "Apply as Courier Partner"}
+            </h2>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              {isEditMode
+                ? "Update your assigned hub, vehicle specifications, and upload new credential documents."
+                : "Fill in your vehicle specifications, select your regional hub, and upload verification documents to start delivering."}
+            </p>
           </div>
-          <h2 className="text-xl font-bold tracking-tight sm:text-2xl">
-            Apply as Courier Partner
-          </h2>
-          <p className="text-sm text-muted-foreground leading-relaxed">
-            Fill in your vehicle specifications, select your regional hub, and
-            upload verification documents to start delivering.
-          </p>
+
+          {isEditMode && onCancelEdit && (
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={onCancelEdit}
+              className="rounded-xl text-xs self-start sm:self-auto"
+            >
+              Cancel Edit
+            </Button>
+          )}
         </div>
 
         {/* Not logged in alert */}
@@ -550,7 +577,7 @@ export default function CourierApplyForm({
             >
               {isSubmitting ? (
                 <>
-                  <Spinner /> Submitting Courier Application...
+                  <Spinner /> {isEditMode ? "Saving Changes..." : "Submitting Courier Application..."}
                 </>
               ) : isUserLoading ? (
                 "Checking account status..."
@@ -558,6 +585,8 @@ export default function CourierApplyForm({
                 "Sign In Required to Apply"
               ) : !isCourier ? (
                 `Courier Role Required (Signed in as ${currentUser.role})`
+              ) : isEditMode ? (
+                "Save Profile Changes"
               ) : (
                 "Submit Courier Profile & Documents"
               )}

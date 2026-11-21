@@ -31,6 +31,7 @@ export default function VerifyAccountForm() {
   const { mutate: verify, isPending: verifyPending } = useVerifyCustomerEmail();
 
   const email = searchParams.get("email");
+  const role = searchParams.get("role") || "CUSTOMER";
 
   
   useEffect(() => {
@@ -68,12 +69,28 @@ export default function VerifyAccountForm() {
       { email, otp },
       {
         onSuccess: () => {
-          toast.add({
-            title: "Verification Successful",
-            description: "Welcome Onboard",
-            type: "success",
-          });
-          router.push("/");
+          if (role === "COURIER") {
+            toast.add({
+              title: "Courier Account Verified!",
+              description: "Welcome to our logistics fleet! Please set up your courier profile and documents.",
+              type: "success",
+            });
+            router.push("/courier-apply");
+          } else if (role === "ADMIN") {
+            toast.add({
+              title: "Admin Account Verified!",
+              description: "Welcome to the Admin Operations Portal.",
+              type: "success",
+            });
+            router.push("/admin");
+          } else {
+            toast.add({
+              title: "Verification Successful!",
+              description: "Welcome onboard! Your customer account is now active.",
+              type: "success",
+            });
+            router.push("/");
+          }
         },
         onError: (err: Error) => {
           toast.add({

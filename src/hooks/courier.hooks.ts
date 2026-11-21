@@ -1,13 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getAllHubs, getMyCourierProfile, setupCourierProfile } from "@/api";
 
-export function useGetHubs() {
-  return useQuery({
-    queryKey: ["hubs"],
-    queryFn: getAllHubs,
-    staleTime: 5 * 60 * 1000,
-  });
-}
+export { useGetHubs } from "./hub.hooks";
 
 export function useSubmitCourierProfile() {
   const queryClient = useQueryClient();

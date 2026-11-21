@@ -1,20 +1,18 @@
 import z from "zod";
 
 export const loginSchema = z.object({
-  email: z.email(),
-  password: z
-    .string()
-    .min(8, "Password Must Minimum 8 Characters Long")
-    .regex(/[a-z]/, "Password must contain at least 1 Number")
-    .regex(/[A-Z]/, "Password must contain atleast 1 Uppercase Letter")
-    .regex(/[0-9]/, "Password must contain atleast 1 Number")
-    .regex(/[^a-zA-Z0-9]/, "Password must contain atleast 1 Special Character"),
+  email: z.string().email("Please enter a valid email address"),
+  password: z.string().min(1, "Password is required"),
 });
+
+export const RoleEnum = z.enum(["CUSTOMER", "COURIER", "ADMIN"]);
+export type TRole = z.infer<typeof RoleEnum>;
 
 export const registerSchema = z
   .object({
     name: z.string().min(3, "Name must be at least 3 characters long"),
-    email: z.email("Please enter a valid email address"),
+    email: z.string().email("Please enter a valid email address"),
+    role: RoleEnum,
     password: z
       .string()
       .min(8, "Password must be minimum 8 characters long")

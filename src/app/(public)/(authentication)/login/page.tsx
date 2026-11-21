@@ -1,6 +1,7 @@
-import { GalleryVerticalEnd } from "lucide-react";
+import { Suspense } from "react";
 import Link from "next/link";
 import LoginForm from "@/components/form/login-form";
+import { Spinner } from "@/components/ui/spinner";
 
 export default function LoginPage() {
   return (
@@ -13,7 +14,15 @@ export default function LoginPage() {
         </div>
         <div className="flex flex-1 items-center justify-center">
           <div className="w-full max-w-xs">
-            <LoginForm />
+            <Suspense
+              fallback={
+                <div className="flex justify-center p-8">
+                  <Spinner className="size-6 text-primary" />
+                </div>
+              }
+            >
+              <LoginForm />
+            </Suspense>
           </div>
         </div>
       </div>
