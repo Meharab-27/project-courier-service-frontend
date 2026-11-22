@@ -164,6 +164,7 @@ export function DashboardTopbar({
           rel="noopener noreferrer"
           title="Open public website in new tab"
           className="hidden md:flex size-8 items-center justify-center rounded-lg border border-border/80 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+          aria-label="Open public website in a new tab"
         >
           <ExternalLink className="size-3.5" />
         </Link>
@@ -184,6 +185,8 @@ export function DashboardTopbar({
             onClick={() => setUserMenuOpen((prev) => !prev)}
             className="flex items-center gap-2 rounded-full ring-2 ring-primary/20 hover:ring-primary/50 transition-all p-0.5 outline-none"
             aria-expanded={userMenuOpen}
+            aria-haspopup="true"
+            aria-label="Open user account menu"
           >
             <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-tr from-primary to-primary/80 text-primary-foreground font-bold text-xs shadow-xs">
               {user.avatarUrl ? (
