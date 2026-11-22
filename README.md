@@ -1,36 +1,102 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Express Courier — Frontend
+
+A next-generation nationwide parcel logistics platform built with **Next.js 15**, covering all 64 districts of Bangladesh across 62 strategic distribution hubs.
+
+## Features
+
+- 📦 **Parcel Booking** — Book pickups from your doorstep in minutes
+- 🔍 **Real-Time Tracking** — 8-stage shipment lifecycle with audit-trail logs
+- 🔐 **6-Digit OTP Delivery** — Cryptographically secure handover verification
+- 💳 **Stripe & COD Payments** — International card payments + Cash on Delivery
+- 🤖 **Bilingual AI Assistant** — English & Bangla logistics support
+- 🏭 **62 Hub Network** — Nationwide distribution hub management
+- 👤 **Role-Based Dashboards** — Customer, Courier, and Admin portals
+- 🌐 **Google OAuth** — One-click sign-in with Google
+
+## Tech Stack
+
+| Layer | Technology |
+|---|---|
+| Framework | Next.js 15 (App Router) |
+| Language | TypeScript |
+| Styling | Tailwind CSS v4 + shadcn/ui |
+| State / Data | TanStack Query v5 |
+| Forms | TanStack Form |
+| Auth | Google OAuth (`@react-oauth/google`) |
+| Payments | Stripe |
+| Linting | Biome |
+| Package Manager | pnpm |
 
 ## Getting Started
 
-First, run the development server:
+### 1. Clone the repository
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/Meharab-27/project-courier-service-frontend.git
+cd project-courier-service-frontend
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. Install dependencies
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+pnpm install
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 3. Set up environment variables
 
-## Learn More
+```bash
+cp .env.example .env.local
+```
 
-To learn more about Next.js, take a look at the following resources:
+Fill in the required values in `.env.local`:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```env
+NEXT_PUBLIC_API_URL=http://localhost:5000/api/v1
+NEXT_PUBLIC_GOOGLE_CLIENT_ID=your_google_client_id
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=your_stripe_key
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### 4. Run the development server
 
-## Deploy on Vercel
+```bash
+pnpm dev
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Project Structure
+
+```
+src/
+├── app/                  # Next.js App Router pages
+│   ├── (dashboard)/      # Protected dashboard routes
+│   └── (public)/         # Public marketing & auth pages
+├── components/
+│   ├── form/             # Form components (login, register, etc.)
+│   ├── layout/           # Header, Footer, Dashboard shell
+│   ├── modules/          # Feature-level page sections
+│   └── ui/               # Reusable UI primitives (shadcn/ui)
+├── api/                  # API client functions
+├── hooks/                # Custom React hooks
+├── providers/            # Context providers
+├── utils/                # Helper utilities
+└── validation/           # Zod schemas
+```
+
+## User Roles
+
+| Role | Access |
+|---|---|
+| **Customer** | Book parcels, track shipments, manage address book |
+| **Courier** | View delivery queue, complete deliveries with OTP |
+| **Admin** | Manage hubs, approve couriers, oversee all shipments |
+
+## Contributing
+
+1. Fork the repository and create a feature branch
+2. Make your changes with clear, descriptive commits
+3. Submit a pull request with a summary of your changes
+
+## License
+
+MIT © Express Courier Service Bangladesh
