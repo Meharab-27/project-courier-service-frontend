@@ -60,7 +60,7 @@ export function Header() {
     {
       title: "Rate Calculator",
       icon: <IconCalculator className="size-full text-foreground/80" />,
-      href: "/book-parcel",
+      href: "/book-parcel#rate-calculator",
     },
     {
       title: "Apply Courier",
