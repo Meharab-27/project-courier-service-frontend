@@ -135,13 +135,13 @@ export default function Footer() {
           <p>© {new Date().getFullYear()} Express Courier Service Bangladesh. All rights reserved.</p>
 
           <div className="flex items-center gap-6 text-[11px]">
-            <Link href="/" className="hover:text-foreground transition-colors">
+            <Link href="/terms-of-service" className="hover:text-foreground transition-colors">
               Terms of Service
             </Link>
-            <Link href="/" className="hover:text-foreground transition-colors">
+            <Link href="/privacy-policy" className="hover:text-foreground transition-colors">
               Privacy Policy
             </Link>
-            <Link href="/" className="hover:text-foreground transition-colors">
+            <Link href="/delivery-sla" className="hover:text-foreground transition-colors">
               Delivery SLA
             </Link>
             <span className="inline-flex items-center gap-1 font-semibold text-emerald-600 dark:text-emerald-400">
